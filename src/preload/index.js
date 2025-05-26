@@ -8,4 +8,7 @@ contextBridge.exposeInMainWorld('MessagesAPI', {
 	subscribeForEntries: callback => {
 		ipcRenderer.on('entries', callback)
 	},
+	subscribeForTimer: callback => {
+		ipcRenderer.on('tick', callback)
+	},
 })
