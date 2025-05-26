@@ -1,7 +1,10 @@
 import { app, BrowserWindow } from 'electron'
+import path from 'path'
+import { Storage } from './storage'
 
 export default class TimerApp {
 	constructor() {
+		this.storage = new Storage()
 		this.subscribeForAppEvents()
 		app.whenReady().then(() => this.createWindow())
 	}
@@ -24,19 +27,26 @@ export default class TimerApp {
 				height: 32,
 			},
 			webPreferences: {
-				// worldSafeExecuteJavaScript: true,
-				// preload: path.join(app.getAppPath(), 'preload', 'index.js'),
-				nodeIntegration: true,
+				worldSafeExecuteJavaScript: true,
+				preload: path.join(app.getAppPath(), 'preload', 'index.js'),
+				// nodeIntegration: true,
 			},
 		})
 
 		this.window.loadFile('renderer/index.html')
 
-		// this.window.webContents.openDevTools({ mode: 'detach' })
+		this.window.webContents.openDevTools({ mode: 'detach' })
+		this.window.webContents.on('did-finish-load', () => {
+			this.window.webContents.send('entries', {
+				entries: this.storage.get('entries'),
+			})
+		})
 
 		this.window.on('closed', () => {
 			this.window = null
 		})
+		// const storage = new Storage()
+		// debugger
 	}
 
 	subscribeForAppEvents() {

@@ -5,7 +5,7 @@
 import { contextBridge, ipcRenderer } from 'electron'
 
 contextBridge.exposeInMainWorld('MessagesAPI', {
-  onLoaded: callback => {
-    ipcRenderer.on('loaded', callback)
-  }
+	subscribeForEntries: callback => {
+		ipcRenderer.on('entries', callback)
+	},
 })
