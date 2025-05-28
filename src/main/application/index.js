@@ -1,4 +1,4 @@
-import { app, BrowserWindow } from 'electron'
+import { app, BrowserWindow, ipcMain } from 'electron'
 import path from 'path'
 import { Storage } from './storage'
 import { Timer } from './timer'
@@ -8,6 +8,7 @@ export default class TimerApp {
 		this.storage = new Storage()
 		this.timer = new Timer()
 		this.subscribeForAppEvents()
+		this.subscribeForIPC()
 		app.whenReady().then(() => this.createWindow())
 	}
 	createWindow() {
@@ -70,6 +71,15 @@ export default class TimerApp {
 			if (BrowserWindow.getAllWindows().length === 0) {
 				this.createWindow()
 			}
+		})
+	}
+
+	subscribeForIPC() {
+		ipcMain.on('timer:start', () => {
+			this.timer.start()
+		})
+		ipcMain.on('timer:stop', () => {
+			this.timer.stop()
 		})
 	}
 }
