@@ -81,5 +81,12 @@ export default class TimerApp {
 		ipcMain.on('timer:stop', () => {
 			this.timer.stop()
 		})
+		ipcMain.on('save', (_, data) => {
+			const entries = this.storage.get('entries') || []
+			debugger
+			entries.push(data)
+			this.storage.set('entries', entries)
+			this.window.webContents.send('entries', { entries })
+		})
 	}
 }

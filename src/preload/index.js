@@ -17,4 +17,7 @@ contextBridge.exposeInMainWorld('MessagesAPI', {
 	stopTimer: () => {
 		ipcRenderer.send('timer:stop')
 	},
+	saveEntry: data => {
+		ipcRenderer.send('save', data)
+	},
 })

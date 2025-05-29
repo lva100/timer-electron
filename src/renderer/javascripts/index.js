@@ -3,10 +3,16 @@ import ReactDOM from 'react-dom/client'
 import { App } from './components/App'
 require('application.css')
 
-window.MessagesAPI.subscribeForEntries((_, data) => {
-	console.log(data.entries)
-})
+let root = null
 
 window.onload = () => {
-	ReactDOM.createRoot(document.getElementById('root')).render(<App />)
+	root = ReactDOM.createRoot(document.getElementById('root'))
+}
+
+window.MessagesAPI.subscribeForEntries((_, data) => {
+	renderApp(data.entries)
+})
+
+const renderApp = (entries = []) => {
+	root.render(<App entries={entries} />)
 }

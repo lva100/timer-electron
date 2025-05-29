@@ -1,5 +1,8 @@
 import React, { useEffect, useState } from 'react'
 
+import { DateTime } from 'luxon'
+import { nanoid } from 'nanoid'
+
 import { Actions } from './actions'
 import { Title } from './title'
 
@@ -20,6 +23,13 @@ export const New = () => {
 		window.MessagesAPI.startTimer()
 	}
 	const handleStopTimer = () => {
+		window.MessagesAPI.saveEntry({
+			id: nanoid(),
+			duration: time,
+			title: title,
+			project: 'none',
+			createdAt: DateTime.local().toISO(),
+		})
 		setRunning(false)
 		setTime(0)
 		setTitle('')

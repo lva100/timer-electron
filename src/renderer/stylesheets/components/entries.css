@@ -36,3 +36,9 @@
 .entry .time {
 	color: #777;
 }
+
+.empty-state {
+	padding: 20px;
+	text-align: center;
+	color: #a8a8a8;
+}
