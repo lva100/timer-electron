@@ -1,10 +1,14 @@
 import { app, BrowserWindow, ipcMain } from 'electron'
+import { DateTime } from 'luxon'
+import { nanoid } from 'nanoid'
 import path from 'path'
 import { Storage } from './storage'
 import { Timer } from './timer'
 
 export default class TimerApp {
 	constructor() {
+		// debugger
+		this.entry = {}
 		this.storage = new Storage()
 		this.timer = new Timer()
 		this.subscribeForAppEvents()
@@ -48,6 +52,8 @@ export default class TimerApp {
 
 		this.window.webContents.on('did-finish-load', () => {
 			this.window.webContents.send('entries', {
+				title: this.entry.title,
+				time: this.timer.get(),
 				entries: this.storage.get('entries'),
 			})
 		})
@@ -56,6 +62,7 @@ export default class TimerApp {
 			this.timer.onChange = null
 			this.window = null
 		})
+
 		// const storage = new Storage()
 		// debugger
 	}
@@ -75,18 +82,32 @@ export default class TimerApp {
 	}
 
 	subscribeForIPC() {
-		ipcMain.on('timer:start', () => {
+		ipcMain.on('timer:start', (_, data) => {
 			this.timer.start()
+			this.createEntry(data.title)
 		})
 		ipcMain.on('timer:stop', () => {
-			this.timer.stop()
+			const duration = this.timer.stop()
+			this.entry.duration = duration
+			this.saveEntry()
 		})
-		ipcMain.on('save', (_, data) => {
-			const entries = this.storage.get('entries') || []
-			debugger
-			entries.push(data)
-			this.storage.set('entries', entries)
-			this.window.webContents.send('entries', { entries })
-		})
+	}
+
+	createEntry(title) {
+		this.entry = {
+			id: nanoid(),
+			duration: 0,
+			title: title,
+			project: 'none',
+			createdAt: DateTime.local().toISO(),
+		}
+	}
+
+	saveEntry() {
+		const entries = this.storage.get('entries') || []
+		entries.push(this.entry)
+		this.storage.set('entries', entries)
+		this.window.webContents.send('entries', { entries })
+		this.entry = {}
 	}
 }

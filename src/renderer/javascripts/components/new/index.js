@@ -1,35 +1,26 @@
 import React, { useEffect, useState } from 'react'
 
-import { DateTime } from 'luxon'
-import { nanoid } from 'nanoid'
-
 import { Actions } from './actions'
 import { Title } from './title'
 
-export const New = () => {
-	const [title, setTitle] = useState('')
-	const [time, setTime] = useState(0)
+export const New = ({ title: defaultTitle, time: defaultTime }) => {
+	const [title, setTitle] = useState(defaultTitle)
+	const [time, setTime] = useState(defaultTime)
 	const [running, setRunning] = useState(false)
 
 	useEffect(() => {
 		window.MessagesAPI.subscribeForTimer((_, data) => {
 			setTime(data.time)
+			setTitle(data.title)
 			setRunning(true)
 		})
 	}, [])
 
 	const handleStartTimer = () => {
 		setRunning(true)
-		window.MessagesAPI.startTimer()
+		window.MessagesAPI.startTimer(title)
 	}
 	const handleStopTimer = () => {
-		window.MessagesAPI.saveEntry({
-			id: nanoid(),
-			duration: time,
-			title: title,
-			project: 'none',
-			createdAt: DateTime.local().toISO(),
-		})
 		setRunning(false)
 		setTime(0)
 		setTitle('')

@@ -10,9 +10,9 @@ window.onload = () => {
 }
 
 window.MessagesAPI.subscribeForEntries((_, data) => {
-	renderApp(data.entries)
+	renderApp(data)
 })
 
-const renderApp = (entries = []) => {
-	root.render(<App entries={entries} />)
+const renderApp = ({ entries, title, time }) => {
+	root.render(<App entries={entries} title={title} time={time} />)
 }
